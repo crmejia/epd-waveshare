@@ -91,10 +91,10 @@ where
             spi,
             Command::TconResolutionSetting,
             &[
-                WIDTH as u8 / 256,
-                WIDTH as u8 % 256,
-                HEIGHT as u8 / 256,
-                HEIGHT as u8 % 256,
+                (WIDTH / 256) as u8,
+                (WIDTH % 256) as u8,
+                (HEIGHT / 256) as u8,
+                (HEIGHT % 256) as u8,
             ],
         )?;
         self.cmd_with_data(
