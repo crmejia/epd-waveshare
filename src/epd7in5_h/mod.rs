@@ -97,7 +97,11 @@ where
             Command::SpiFlashControl,
             &[0x98, 0x98, 0x98, 0x75, 0xCA, 0xB2, 0x98, 0x7E],
         )?;
-        self.cmd_with_data(spi, Command::GateSourceSetting, &[0x00, 0x00, 0x00, 0x00])?;
+        self.cmd_with_data(
+            spi,
+            Command::GateSourceStartSetting,
+            &[0x00, 0x00, 0x00, 0x00],
+        )?;
         self.cmd_with_data(spi, Command::TemperatureBoundaryPhaseC2, &[0x1C])?;
         self.cmd_with_data(spi, Command::PowerSaving, &[0x00])?;
         self.cmd_with_data(spi, Command::UnknownCommand, &[0x01])?;
@@ -138,7 +142,8 @@ where
         _delay: &mut DELAY,
         black: &[u8],
     ) -> Result<(), SPI::Error> {
-        self.interface.cmd(spi, Command::DataStartTransmission1)?;
+        self.interface
+            .cmd(spi, Command::DisplayStartTransmission1)?;
         self.interface.data(spi, black)?;
         self.interface.cmd(spi, Command::DataStop)?;
         Ok(())
@@ -153,7 +158,8 @@ where
         delay: &mut DELAY,
         chromatic: &[u8],
     ) -> Result<(), SPI::Error> {
-        self.interface.cmd(spi, Command::DataStartTransmission2)?;
+        self.interface
+            .cmd(spi, Command::DisplayStartTransmission2)?;
         self.interface.data(spi, chromatic)?;
         self.interface.cmd(spi, Command::DataStop)?;
 
@@ -212,12 +218,12 @@ where
         // (B) version sends one buffer for black and one for red
         self.cmd_with_data(
             spi,
-            Command::DataStartTransmission1,
+            Command::DisplayStartTransmission1,
             &buffer[..NUM_DISPLAY_BITS],
         )?;
         self.cmd_with_data(
             spi,
-            Command::DataStartTransmission2,
+            Command::DisplayStartTransmission2,
             &buffer[NUM_DISPLAY_BITS..],
         )?;
         self.interface.cmd(spi, Command::DataStop)?;
@@ -258,10 +264,10 @@ where
         self.wait_until_idle(spi, delay)?;
         self.send_resolution(spi)?;
 
-        self.command(spi, Command::DataStartTransmission1)?;
+        self.command(spi, Command::DisplayStartTransmission1)?;
         self.interface.data_x_times(spi, 0xFF, WIDTH / 8 * HEIGHT)?;
 
-        self.command(spi, Command::DataStartTransmission2)?;
+        self.command(spi, Command::DisplayStartTransmission2)?;
         self.interface.data_x_times(spi, 0x00, WIDTH / 8 * HEIGHT)?;
 
         self.interface.cmd(spi, Command::DataStop)?;
@@ -348,8 +354,8 @@ where
             ],
         )?;
         let half = buffer.len() / 2;
-        self.cmd_with_data(spi, Command::DataStartTransmission1, &buffer[..half])?;
-        self.cmd_with_data(spi, Command::DataStartTransmission2, &buffer[half..])?;
+        self.cmd_with_data(spi, Command::DisplayStartTransmission1, &buffer[..half])?;
+        self.cmd_with_data(spi, Command::DisplayStartTransmission2, &buffer[half..])?;
 
         self.command(spi, Command::DisplayRefresh)?;
         self.wait_until_idle(spi, delay)?;
@@ -379,7 +385,7 @@ where
         let w = self.width();
         let h = self.height();
 
-        self.command(spi, Command::TconResolution)?;
+        self.command(spi, Command::TconResolutionSetting)?;
         self.send_data(spi, &[(w >> 8) as u8])?;
         self.send_data(spi, &[w as u8])?;
         self.send_data(spi, &[(h >> 8) as u8])?;
