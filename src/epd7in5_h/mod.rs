@@ -90,7 +90,12 @@ where
         self.cmd_with_data(
             spi,
             Command::TconResolutionSetting,
-            &[WIDTH / 256, WIDTH % 256, HEIGHT / 256, HEIGHT % 256],
+            &[
+                WIDTH as u8 / 256,
+                WIDTH as u8 % 256,
+                HEIGHT as u8 / 256,
+                HEIGHT as u8 % 256,
+            ],
         )?;
         self.cmd_with_data(
             spi,
@@ -106,7 +111,7 @@ where
         self.cmd_with_data(spi, Command::PowerSaving, &[0x00])?;
         self.cmd_with_data(spi, Command::UnknownCommand, &[0x01])?;
         self.cmd_with_data(spi, Command::PllControl, &[0x08])?;
-        self.cmd(spi, Command::PowerOn)?;
+        self.command(spi, Command::PowerOn)?;
         // Not in C driver
         self.wait_until_idle(spi, delay)?;
         Ok(())
