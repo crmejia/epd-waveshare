@@ -50,20 +50,19 @@ const SINGLE_BYTE_WRITE: bool = false;
 ///
 pub struct Epd7in5<SPI, BUSY, DC, RST, DELAY> {
     /// Connection Interface
-    interface: DisplayInterface<SPI, BUSY, DC, RST, DELAY, PWR, SINGLE_BYTE_WRITE>,
+    interface: DisplayInterface<SPI, BUSY, DC, RST, DELAY, SINGLE_BYTE_WRITE>,
     /// Background Color
     color: TriColor,
 }
 
-impl<SPI, BUSY, DC, RST, DELAY, PWR> InternalWiAdditions<SPI, BUSY, DC, RST, DELAY, PWR>
-    for Epd7in5<SPI, BUSY, DC, RST, DELAY, PWR>
+impl<SPI, BUSY, DC, RST, DELAY> InternalWiAdditions<SPI, BUSY, DC, RST, DELAY>
+    for Epd7in5<SPI, BUSY, DC, RST, DELAY>
 where
     SPI: SpiDevice,
     BUSY: InputPin,
     DC: OutputPin,
     RST: OutputPin,
     DELAY: DelayNs,
-    PWR: OutputPin,
 {
     fn init(&mut self, spi: &mut SPI, delay: &mut DELAY) -> Result<(), SPI::Error> {
         // Reset the device
